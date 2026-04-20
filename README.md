@@ -2,7 +2,7 @@
 
 A fully automated research agent built with **FastAPI**, **Groq (LLaMA 3.3)**, **DuckDuckGo Search**, and **Pydantic structured output**.  
 It takes a user topic → performs web search → analyzes information using LLM → returns a structured research report.
-
+This cotains the backend code 
 ---
 
 ## Features
