@@ -1,37 +1,97 @@
-#  AI Research Agent
+# AI Research Agent
 
-A fully automated research agent built with **FastAPI**, **Groq (LLaMA 3.3)**, **DuckDuckGo Search**, and **Pydantic structured output**.  
-It takes a user topic → performs web search → analyzes information using LLM → returns a structured research report.
-This cotains the backend code 
----
+Backend-only AI research API built with FastAPI, LangChain, Groq, and SearchAPI.
+It accepts a user research query, performs web search, and returns structured output.
 
 ## Features
 
-- ✔ **Research Automation**: Takes any topic and performs live internet lookup.
-- ✔ **DuckDuckGo Search Tool**: Free, no-API-key search integration.
-- ✔ **Groq LLaMA-3.3 LLM Processing**: Fast, high-accuracy model reasoning.
-- ✔ **Pydantic Structured Output**: Ensures predictable JSON responses.
-- ✔ **FastAPI Endpoint**: Ready for deployment.
+- FastAPI API with `/research` endpoint
+- Groq LLM (`MODEL` from `.env`)
+- SearchAPI tool integration for live web results
+- Structured response parsing with Pydantic
+- Fallback to internal knowledge only when search results are not useful
 
----
+## Tech Stack
 
-##  Tech Stack
+| Component | Technology |
+|---|---|
+| Web Framework | FastAPI |
+| LLM | Groq via `langchain-groq` |
+| Agent Runtime | LangChain `create_agent` |
+| Search Tool | SearchAPI (`SearchApiAPIWrapper`) |
+| Validation | Pydantic |
+| Runtime | Python 3.10+ |
 
-| Component         | Technology                       |
-|------------------|----------------------------------|
-| Web Framework     | FastAPI                          |
-| LLM               | Groq – LLaMA-3.3-70B             |
-| Search Engine     | DuckDuckGo (ddgs)                |
-| Agent Logic       | Custom                           |
-| Output Parsing    | LangChain PydanticOutputParser   |
-| Runtime           | Python 3.10–3.12                 |
+## Project Structure
 
----pip install -r requirements.txt
-cd ai-research-agent
-uvicorn maain:app --reload
-cd frontend 
-npm start / npm run build 
+- `main.py` - FastAPI app and `/research` endpoint
+- `agent.py` - LangChain agent setup and lazy initialization
+- `tools.py` - Search tool (`search_user_query`)
+- `schemas.py` - Request/response models
+- `prompt.py` - Output parser setup
+- `requirements.txt` - Python dependencies
 
+## Environment Variables
 
-## 📂 Project Structure
+Create a `.env` file in project root:
 
+```env
+MODEL=llama-3.3-70b-versatile
+GROQ_API_KEY=your_groq_api_key
+SEARCHAPI_API_KEY=your_searchapi_key
+```
+
+## Installation
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+## Run the Server
+
+```bash
+uvicorn main:app --reload
+```
+
+Server runs at:
+- `http://127.0.0.1:8000`
+
+## API Endpoints
+
+### Health Check
+
+- `GET /`
+- Response:
+
+```json
+{"message": "Agent is running"}
+```
+
+### Research Endpoint
+
+- `POST /research`
+- Request body:
+
+```json
+{
+  "query": "latest AI news in 2026"
+}
+```
+
+- Example response:
+
+```json
+{
+  "answer": "The latest AI news in 2026 includes expanded Search Live, enhanced AI tools, and increased enterprise AI adoption.",
+  "source": "SearchAPI",
+  "confidence": "High"
+}
+```
+
+## Notes
+
+- Keep `.env` private. Never commit real API keys.
+- If `MODEL` or `GROQ_API_KEY` is missing, `/research` returns a clear server error.
+- `.gitignore` already excludes `venv/`, `__pycache__/`, and `.env`.
